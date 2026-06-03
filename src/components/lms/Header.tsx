@@ -36,7 +36,7 @@ export function Header({ onSearch, onMenuToggle, menuOpen }: Props) {
           className="text-base font-black tracking-tight"
           style={{ color: "var(--ws-text)", letterSpacing: "-0.04em" }}
         >
-          AI Builder Workshop
+          Vibe Coding Workshop
         </span>
       </div>
 

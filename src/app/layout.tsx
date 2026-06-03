@@ -10,7 +10,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AI Builder Workshop",
+  title: "Vibe Coding Workshop",
   description: "Практический воркшоп по вайб-кодингу",
 };
 
