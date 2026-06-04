@@ -111,8 +111,8 @@ export function LessonPage({ lesson, onNavigate }: Props) {
         </>
       )}
 
-      {/* Prev / Next */}
-      <div className="grid grid-cols-2 gap-3 mt-14">
+      {/* Prev / Next — hidden for interactive component pages */}
+      {!lesson.componentId && <div className="grid grid-cols-2 gap-3 mt-14">
         {prevId ? (
           <button
             onClick={() => onNavigate(prevId)}
@@ -184,7 +184,7 @@ export function LessonPage({ lesson, onNavigate }: Props) {
         ) : (
           <div />
         )}
-      </div>
+      </div>}
     </article>
   );
 }

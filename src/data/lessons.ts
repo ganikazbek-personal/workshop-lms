@@ -48,6 +48,12 @@ export const navigation: NavSection[] = [
     ],
   },
   {
+    title: "Свободная работа",
+    items: [
+      { id: "own-project", label: "Свой проект" },
+    ],
+  },
+  {
     title: "Кейсы",
     items: [
       { id: "case1-landing", label: "Case 1: Медиа-монитор" },
@@ -595,5 +601,6 @@ export const lessonOrder = [
   "install-vercel",
   "case1-landing",
   "case2-kpi",
+  "own-project",
   "prompt-generator",
 ];
