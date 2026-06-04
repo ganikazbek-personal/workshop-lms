@@ -9,6 +9,8 @@ export type Lesson = {
   title: string;
   badge: string;
   progress: number;
+  // Interactive component (renders above markdown if both present)
+  componentId?: string;
   // Rich markdown content — when present, renders instead of structured fields
   markdownContent?: string;
   // Structured fields (legacy simple lessons)
@@ -59,9 +61,9 @@ export const navigation: NavSection[] = [
     ],
   },
   {
-    title: "Справочник",
+    title: "Инструменты",
     items: [
-      { id: "cheatsheet", label: "Шпаргалка" },
+      { id: "prompt-generator", label: "Генератор промптов" },
     ],
   },
 ];
@@ -513,6 +515,15 @@ export const lessons: Record<string, Lesson> = {
 `,
   },
 
+  "prompt-generator": {
+    id: "prompt-generator",
+    breadcrumb: "Инструменты → Генератор промптов",
+    title: "Генератор промптов для Claude Code",
+    badge: "ИИ-инструмент",
+    progress: 0,
+    componentId: "prompt-generator",
+  },
+
   cheatsheet: {
     id: "cheatsheet",
     breadcrumb: "Справочник → Шпаргалка",
@@ -591,5 +602,5 @@ export const lessonOrder = [
   "case1-landing",
   "case2-kpi",
   "own-project",
-  "cheatsheet",
+  "prompt-generator",
 ];

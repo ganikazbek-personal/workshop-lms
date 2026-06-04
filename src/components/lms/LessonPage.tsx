@@ -5,7 +5,12 @@ import { ProgressBar } from "./ProgressBar";
 import { PromptBlock } from "./PromptBlock";
 import { Checklist } from "./Checklist";
 import { MarkdownContent } from "./MarkdownContent";
+import { PromptGenerator } from "./PromptGenerator";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+
+const COMPONENTS: Record<string, React.ComponentType> = {
+  "prompt-generator": PromptGenerator,
+};
 
 type Props = {
   lesson: Lesson;
@@ -53,6 +58,12 @@ export function LessonPage({ lesson, onNavigate }: Props) {
       </section>
 
       {lesson.progress > 0 && <ProgressBar value={lesson.progress} />}
+
+      {/* ── Interactive component mode ────────────────────────────────── */}
+      {lesson.componentId && COMPONENTS[lesson.componentId] && (() => {
+        const Component = COMPONENTS[lesson.componentId!];
+        return <Component />;
+      })()}
 
       {/* ── Markdown mode ─────────────────────────────────────────────── */}
       {lesson.markdownContent && (
