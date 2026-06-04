@@ -43,7 +43,7 @@ export const navigation: NavSection[] = [
   {
     title: "Кейсы",
     items: [
-      { id: "case1-landing", label: "Case 1: Лендинг" },
+      { id: "case1-landing", label: "Case 1: Медиа-монитор" },
       { id: "case2-kpi", label: "Case 2: KPI Tracker" },
     ],
   },
@@ -418,9 +418,9 @@ export const lessons: Record<string, Lesson> = {
 
   "case1-landing": {
     id: "case1-landing",
-    breadcrumb: "Кейсы → Case 1: Лендинг",
-    title: "Case 1: Лендинг пейдж",
-    badge: "AI Innovation Challenge 2026",
+    breadcrumb: "Кейсы → Case 1: Медиа-монитор",
+    title: "Case 1: Медиа-монитор",
+    badge: "QAZNA News · Самрук-Қазына",
     progress: 40,
     markdownContent: case1Content,
   },
