@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, Copy, Check, RotateCcw } from "lucide-react";
+import { Sparkles, Copy, Check, RotateCcw, Loader } from "lucide-react";
 
 type Fields = {
   task: string;
@@ -10,60 +10,55 @@ type Fields = {
   extra: string;
 };
 
-function buildPrompt(f: Fields): string {
-  const lines: string[] = [
-    "Ты Senior Frontend Developer и UX Designer.",
-    "",
-    "## Задача",
-    f.task.trim(),
-    "",
-  ];
-
-  if (f.audience.trim()) {
-    lines.push("## Для кого и как используется");
-    lines.push(f.audience.trim());
-    lines.push("");
-  }
-
-  if (f.design.trim()) {
-    lines.push("## Стиль и дизайн");
-    lines.push(f.design.trim());
-    lines.push("");
-  }
-
-  if (f.extra.trim()) {
-    lines.push("## Дополнительные требования");
-    lines.push(f.extra.trim());
-    lines.push("");
-  }
-
-  lines.push("## Технические требования");
-  lines.push("- Один HTML файл с встроенным CSS и JavaScript");
-  lines.push("- Без backend, авторизации и баз данных");
-  lines.push("- Адаптивная верстка — хорошо выглядит на телефоне и компьютере");
-  lines.push("- Все стили и скрипты встроены в один файл");
-  lines.push("- Никаких внешних зависимостей и CDN");
-
-  return lines.join("\n");
-}
-
 const EMPTY: Fields = { task: "", audience: "", design: "", extra: "" };
 
 export function PromptGenerator() {
   const [fields, setFields] = useState<Fields>(EMPTY);
   const [prompt, setPrompt] = useState("");
   const [copied, setCopied] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const set = (key: keyof Fields) => (e: React.ChangeEvent<HTMLTextAreaElement>) =>
     setFields((prev) => ({ ...prev, [key]: e.target.value }));
 
-  const generate = () => {
-    if (!fields.task.trim()) return;
-    setPrompt(buildPrompt(fields));
+  const generate = async () => {
+    if (!fields.task.trim() || loading) return;
+    setLoading(true);
+    setPrompt("");
+    setError("");
     setCopied(false);
-    setTimeout(() => {
-      document.getElementById("pg-result")?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 80);
+
+    try {
+      const res = await fetch("/api/generate-prompt", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(fields),
+      });
+
+      if (!res.ok || !res.body) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Ошибка при генерации.");
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+
+      // Scroll to result area as soon as streaming starts
+      setTimeout(() => {
+        document.getElementById("pg-result")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        setPrompt((prev) => prev + decoder.decode(value, { stream: true }));
+      }
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Что-то пошло не так. Попробуйте ещё раз.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const copy = async () => {
@@ -73,7 +68,7 @@ export function PromptGenerator() {
     setTimeout(() => setCopied(false), 1500);
   };
 
-  const reset = () => { setFields(EMPTY); setPrompt(""); setCopied(false); };
+  const reset = () => { setFields(EMPTY); setPrompt(""); setError(""); setCopied(false); };
 
   const fieldStyle: React.CSSProperties = {
     width: "100%",
@@ -105,28 +100,26 @@ export function PromptGenerator() {
     marginBottom: 10,
   };
 
+  const cardStyle: React.CSSProperties = {
+    background: "var(--ws-surface)",
+    border: "1px solid var(--ws-border)",
+    borderRadius: 12,
+    padding: "20px 24px",
+  };
+
   return (
     <div style={{ maxWidth: 780 }}>
-      {/* Header */}
       <div style={{ marginBottom: 32 }}>
         <p style={{ color: "var(--ws-muted)", fontSize: "0.9375rem", lineHeight: 1.6, margin: 0 }}>
-          Опишите идею простыми словами. Получите готовый промпт,
-          который можно сразу вставить в Claude Code.
+          Опишите идею простыми словами. ИИ достроит контекст, структурирует
+          требования и сгенерирует готовый промпт для Claude Code.
         </p>
       </div>
 
-      {/* Fields */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
 
         {/* 1 — Required */}
-        <div
-          style={{
-            background: "var(--ws-surface)",
-            border: "1px solid var(--ws-border)",
-            borderRadius: 12,
-            padding: "20px 24px",
-          }}
-        >
+        <div style={cardStyle}>
           <label style={labelStyle}>
             1. Что нужно сделать?{" "}
             <span style={{ color: "var(--ws-accent)", fontWeight: 400 }}>*</span>
@@ -135,30 +128,22 @@ export function PromptGenerator() {
           <textarea
             value={fields.task}
             onChange={set("task")}
+            disabled={loading}
             placeholder="Например: нужно сделать лендинг для AI Innovation Challenge 2026. На сайте сотрудники должны понять суть программы и отправить свою идею по внедрению ИИ."
-            style={{
-              ...fieldStyle,
-              borderColor: !fields.task.trim() && prompt ? "var(--ws-accent)" : undefined,
-            }}
+            style={fieldStyle}
             onFocus={(e) => { (e.target as HTMLTextAreaElement).style.borderColor = "var(--ws-accent)"; }}
             onBlur={(e) => { (e.target as HTMLTextAreaElement).style.borderColor = "var(--ws-border)"; }}
           />
         </div>
 
         {/* 2 — Optional */}
-        <div
-          style={{
-            background: "var(--ws-surface)",
-            border: "1px solid var(--ws-border)",
-            borderRadius: 12,
-            padding: "20px 24px",
-          }}
-        >
+        <div style={cardStyle}>
           <label style={labelStyle}>2. Для кого делаем и как будут использовать?</label>
           <p style={hintStyle}>Опишите аудиторию и сценарий использования.</p>
           <textarea
             value={fields.audience}
             onChange={set("audience")}
+            disabled={loading}
             placeholder="Например: сайт для сотрудников группы компаний. Они зайдут на страницу, прочитают описание программы, поймут какие идеи принимаются и заполнят короткую форму."
             style={fieldStyle}
             onFocus={(e) => { (e.target as HTMLTextAreaElement).style.borderColor = "var(--ws-accent)"; }}
@@ -167,19 +152,13 @@ export function PromptGenerator() {
         </div>
 
         {/* 3 — Optional */}
-        <div
-          style={{
-            background: "var(--ws-surface)",
-            border: "1px solid var(--ws-border)",
-            borderRadius: 12,
-            padding: "20px 24px",
-          }}
-        >
+        <div style={cardStyle}>
           <label style={labelStyle}>3. Какой стиль дизайна нужен?</label>
           <p style={hintStyle}>Опишите визуальный стиль, настроение и референсы.</p>
           <textarea
             value={fields.design}
             onChange={set("design")}
+            disabled={loading}
             placeholder="Например: современный корпоративный стиль. Белый фон, синие акценты, аккуратные карточки, крупные заголовки. Должно выглядеть дорого, но без сложных анимаций."
             style={fieldStyle}
             onFocus={(e) => { (e.target as HTMLTextAreaElement).style.borderColor = "var(--ws-accent)"; }}
@@ -188,19 +167,13 @@ export function PromptGenerator() {
         </div>
 
         {/* 4 — Optional */}
-        <div
-          style={{
-            background: "var(--ws-surface)",
-            border: "1px solid var(--ws-border)",
-            borderRadius: 12,
-            padding: "20px 24px",
-          }}
-        >
+        <div style={cardStyle}>
           <label style={labelStyle}>4. Дополнительные пожелания</label>
           <p style={hintStyle}>Добавьте ограничения, функции, технологии или важные детали.</p>
           <textarea
             value={fields.extra}
             onChange={set("extra")}
+            disabled={loading}
             placeholder="Например: сделать адаптивную верстку для телефона. Добавить форму подачи идеи. Использовать HTML, CSS и JavaScript. Без backend и авторизации."
             style={fieldStyle}
             onFocus={(e) => { (e.target as HTMLTextAreaElement).style.borderColor = "var(--ws-accent)"; }}
@@ -210,43 +183,66 @@ export function PromptGenerator() {
       </div>
 
       {/* Generate button */}
-      <div style={{ marginTop: 28 }}>
+      <div style={{ marginTop: 24 }}>
         <button
           onClick={generate}
-          disabled={!fields.task.trim()}
+          disabled={!fields.task.trim() || loading}
           style={{
             display: "inline-flex",
             alignItems: "center",
             gap: 8,
-            background: fields.task.trim() ? "var(--ws-accent)" : "var(--ws-border)",
-            color: fields.task.trim() ? "#000" : "var(--ws-muted)",
+            background: fields.task.trim() && !loading ? "var(--ws-accent)" : "var(--ws-border)",
+            color: fields.task.trim() && !loading ? "#000" : "var(--ws-muted)",
             border: "none",
             borderRadius: 10,
             padding: "13px 28px",
             fontSize: "0.9375rem",
             fontWeight: 800,
-            cursor: fields.task.trim() ? "pointer" : "not-allowed",
+            cursor: fields.task.trim() && !loading ? "pointer" : "not-allowed",
             fontFamily: "inherit",
             transition: "opacity 0.15s",
           }}
-          onMouseEnter={(e) => { if (fields.task.trim()) (e.currentTarget as HTMLElement).style.opacity = "0.85"; }}
+          onMouseEnter={(e) => { if (fields.task.trim() && !loading) (e.currentTarget as HTMLElement).style.opacity = "0.85"; }}
           onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.opacity = "1"; }}
         >
-          <Sparkles size={16} />
-          Сгенерировать промпт
+          {loading ? (
+            <>
+              <Loader size={16} style={{ animation: "spin 1s linear infinite" }} />
+              Генерирую промпт...
+            </>
+          ) : (
+            <>
+              <Sparkles size={16} />
+              Сгенерировать промпт
+            </>
+          )}
         </button>
       </div>
 
+      {/* Spin keyframes */}
+      <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+
+      {/* Error */}
+      {error && (
+        <div
+          style={{
+            marginTop: 20,
+            padding: "12px 16px",
+            background: "rgba(239,68,68,0.1)",
+            border: "1px solid rgba(239,68,68,0.3)",
+            borderRadius: 8,
+            color: "#f87171",
+            fontSize: "0.875rem",
+          }}
+        >
+          {error}
+        </div>
+      )}
+
       {/* Result */}
-      {prompt && (
-        <div id="pg-result" style={{ marginTop: 40 }}>
-          <div
-            style={{
-              borderRadius: 12,
-              overflow: "hidden",
-              border: "1px solid var(--ws-border)",
-            }}
-          >
+      {(prompt || loading) && (
+        <div id="pg-result" style={{ marginTop: 36 }}>
+          <div style={{ borderRadius: 12, overflow: "hidden", border: "1px solid var(--ws-border)" }}>
             {/* Bar */}
             <div
               style={{
@@ -264,40 +260,44 @@ export function PromptGenerator() {
                   <span style={{ width: 12, height: 12, borderRadius: "50%", background: "#febc2e", display: "inline-block" }} />
                   <span style={{ width: 12, height: 12, borderRadius: "50%", background: "#28c840", display: "inline-block" }} />
                 </div>
-                <span style={{ fontSize: "0.8125rem", color: "var(--ws-muted)" }}>prompt.txt</span>
+                <span style={{ fontSize: "0.8125rem", color: "var(--ws-muted)" }}>
+                  {loading ? "генерирую..." : "prompt.txt"}
+                </span>
               </div>
-              <div style={{ display: "flex", gap: 8 }}>
-                <button
-                  onClick={reset}
-                  style={{
-                    display: "flex", alignItems: "center", gap: 6,
-                    background: "var(--ws-surface)", border: "1px solid var(--ws-border)",
-                    color: "var(--ws-muted)", borderRadius: 8, padding: "6px 12px",
-                    fontSize: "0.8125rem", fontFamily: "inherit", cursor: "pointer",
-                  }}
-                >
-                  <RotateCcw size={12} />
-                  Сбросить
-                </button>
-                <button
-                  onClick={copy}
-                  style={{
-                    display: "flex", alignItems: "center", gap: 6,
-                    background: copied ? "var(--ws-accent-soft)" : "var(--ws-surface)",
-                    border: "1px solid var(--ws-border)",
-                    color: copied ? "var(--ws-accent)" : "var(--ws-muted)",
-                    borderRadius: 8, padding: "6px 12px",
-                    fontSize: "0.8125rem", fontWeight: 700, fontFamily: "inherit", cursor: "pointer",
-                    transition: "all 0.15s",
-                  }}
-                >
-                  {copied ? <Check size={12} /> : <Copy size={12} />}
-                  {copied ? "Скопировано" : "Копировать"}
-                </button>
-              </div>
+              {!loading && prompt && (
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button
+                    onClick={reset}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 6,
+                      background: "var(--ws-surface)", border: "1px solid var(--ws-border)",
+                      color: "var(--ws-muted)", borderRadius: 8, padding: "6px 12px",
+                      fontSize: "0.8125rem", fontFamily: "inherit", cursor: "pointer",
+                    }}
+                  >
+                    <RotateCcw size={12} />
+                    Сбросить
+                  </button>
+                  <button
+                    onClick={copy}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 6,
+                      background: copied ? "var(--ws-accent-soft)" : "var(--ws-surface)",
+                      border: "1px solid var(--ws-border)",
+                      color: copied ? "var(--ws-accent)" : "var(--ws-muted)",
+                      borderRadius: 8, padding: "6px 12px",
+                      fontSize: "0.8125rem", fontWeight: 700, fontFamily: "inherit", cursor: "pointer",
+                      transition: "all 0.15s",
+                    }}
+                  >
+                    {copied ? <Check size={12} /> : <Copy size={12} />}
+                    {copied ? "Скопировано" : "Копировать"}
+                  </button>
+                </div>
+              )}
             </div>
 
-            {/* Prompt text */}
+            {/* Content */}
             <pre
               style={{
                 margin: 0,
@@ -309,17 +309,35 @@ export function PromptGenerator() {
                 fontFamily: "inherit",
                 whiteSpace: "pre-wrap",
                 wordBreak: "break-word",
+                minHeight: 60,
               }}
             >
               {prompt}
+              {loading && (
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: 8,
+                    height: "1em",
+                    background: "var(--ws-accent)",
+                    verticalAlign: "text-bottom",
+                    marginLeft: 2,
+                    animation: "blink 0.8s step-end infinite",
+                  }}
+                />
+              )}
             </pre>
           </div>
 
-          <p style={{ marginTop: 14, fontSize: "0.8125rem", color: "var(--ws-muted)" }}>
-            Скопируйте промпт и вставьте в Claude Code — он сразу поймёт задачу и начнёт работать.
-          </p>
+          {!loading && prompt && (
+            <p style={{ marginTop: 14, fontSize: "0.8125rem", color: "var(--ws-muted)" }}>
+              Скопируйте промпт и вставьте в Claude Code — он сразу поймёт задачу и начнёт работать.
+            </p>
+          )}
         </div>
       )}
+
+      <style>{`@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }`}</style>
     </div>
   );
 }
