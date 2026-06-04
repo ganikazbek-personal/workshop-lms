@@ -56,6 +56,12 @@ export const navigation: NavSection[] = [
     ],
   },
   {
+    title: "Безопасность",
+    items: [
+      { id: "ib-guide", label: "Информационная безопасность" },
+    ],
+  },
+  {
     title: "Свободная работа",
     items: [
       { id: "own-project", label: "Свой проект" },
@@ -65,12 +71,6 @@ export const navigation: NavSection[] = [
     title: "Инструменты",
     items: [
       { id: "prompt-generator", label: "Генератор промптов" },
-    ],
-  },
-  {
-    title: "Безопасность",
-    items: [
-      { id: "ib-guide", label: "Информационная безопасность" },
     ],
   },
 ];
