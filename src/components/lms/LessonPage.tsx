@@ -32,7 +32,7 @@ export function LessonPage({ lesson, onNavigate }: Props) {
   const nextId = idx < lessonOrder.length - 1 ? lessonOrder[idx + 1] : null;
 
   return (
-    <article className="max-w-[850px] w-full py-10 px-10 pb-24 xl:px-14">
+    <article className={`w-full py-10 px-10 pb-24 xl:px-14 ${lesson.componentId && !lesson.markdownContent ? "" : "max-w-[850px]"}`}>
       {/* Breadcrumb */}
       <p className="text-xs mb-5" style={{ color: "var(--ws-muted)" }}>
         {lesson.breadcrumb}

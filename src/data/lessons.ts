@@ -55,12 +55,6 @@ export const navigation: NavSection[] = [
     ],
   },
   {
-    title: "Свободная работа",
-    items: [
-      { id: "own-project", label: "Свой проект" },
-    ],
-  },
-  {
     title: "Инструменты",
     items: [
       { id: "prompt-generator", label: "Генератор промптов" },
@@ -601,6 +595,5 @@ export const lessonOrder = [
   "install-vercel",
   "case1-landing",
   "case2-kpi",
-  "own-project",
   "prompt-generator",
 ];
