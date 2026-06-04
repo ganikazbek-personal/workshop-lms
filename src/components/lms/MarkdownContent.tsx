@@ -160,7 +160,7 @@ export function MarkdownContent({ content }: Props) {
         return (
           <PromptBlock
             text={text}
-            filename={!lang || lang === "bash" ? "terminal" : lang}
+            filename={!lang || lang === "bash" ? "prompt" : lang}
           />
         );
       }
