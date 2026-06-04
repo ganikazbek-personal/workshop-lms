@@ -25,8 +25,9 @@ export function Workshop() {
 
   const lesson = lessons[activeLesson] ?? lessons.home;
 
-  // Compute TOC headings: extract from markdown, or use undefined for structured
+  // Compute TOC headings: [] hides TOC, undefined shows fixed structured headings
   const tocHeadings = useMemo<TocHeading[] | undefined>(() => {
+    if (lesson.componentId && !lesson.markdownContent) return [];
     if (!lesson.markdownContent) return undefined;
     return extractHeadings(lesson.markdownContent);
   }, [lesson]);

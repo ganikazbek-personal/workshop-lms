@@ -70,8 +70,8 @@ export function LessonPage({ lesson, onNavigate }: Props) {
         <MarkdownContent content={lesson.markdownContent} />
       )}
 
-      {/* ── Structured mode (legacy lessons) ────────────────────────── */}
-      {!lesson.markdownContent && (
+      {/* ── Structured mode (legacy lessons only — not components) ──── */}
+      {!lesson.markdownContent && !lesson.componentId && (
         <>
           <SectionHeading id="overview">Обзор</SectionHeading>
           <p className="text-[15px] leading-relaxed" style={{ color: "var(--ws-text)" }}>
