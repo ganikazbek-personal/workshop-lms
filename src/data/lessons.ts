@@ -1,6 +1,7 @@
 import { homeContent } from "./content/home";
 import { installContent } from "./content/install";
 import { case1Content } from "./content/case1";
+import { case2Content } from "./content/case2";
 
 export type Lesson = {
   id: string;
@@ -44,7 +45,7 @@ export const navigation: NavSection[] = [
     title: "Кейсы",
     items: [
       { id: "case1-landing", label: "Case 1: Медиа-монитор" },
-      { id: "case2-kpi", label: "Case 2: KPI Tracker" },
+      { id: "case2-kpi", label: "Case 2: KPI-дашборд" },
     ],
   },
   {
@@ -427,16 +428,11 @@ export const lessons: Record<string, Lesson> = {
 
   "case2-kpi": {
     id: "case2-kpi",
-    breadcrumb: "Кейсы → Case 2: KPI Tracker",
-    title: "Case 2: KPI Tracker",
-    badge: "Скоро",
-    progress: 0,
-    markdownContent: `## Этот раздел появится позже
-
-Материалы по кейсу **KPI Tracker** будут добавлены ведущим перед началом соответствующего блока.
-
-Пока переходите к **Case 1: Лендинг** — он уже готов.
-`,
+    breadcrumb: "Кейсы → Case 2: KPI-дашборд",
+    title: "Case 2: KPI-дашборд",
+    badge: "САМРУК · II квартал 2026",
+    progress: 70,
+    markdownContent: case2Content,
   },
 
   "own-project": {
