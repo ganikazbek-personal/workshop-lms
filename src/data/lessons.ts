@@ -1,5 +1,5 @@
 import { homeContent } from "./content/home";
-import { installContent } from "./content/install";
+import { installVscode, installClaude, installQwen, installGithub, installVercel } from "./content/install";
 import { case1Content } from "./content/case1";
 import { case2Content } from "./content/case2";
 
@@ -38,7 +38,11 @@ export const navigation: NavSection[] = [
   {
     title: "Подготовка",
     items: [
-      { id: "install", label: "Установка инструментов" },
+      { id: "install-vscode", label: "VS Code" },
+      { id: "install-claude", label: "Claude Code" },
+      { id: "install-qwen", label: "QWEN Code Companion" },
+      { id: "install-github", label: "GitHub" },
+      { id: "install-vercel", label: "Vercel" },
     ],
   },
   {
@@ -408,13 +412,49 @@ export const lessons: Record<string, Lesson> = {
   },
   // ── New rich-content lessons ──────────────────────────────────────────────
 
-  install: {
-    id: "install",
-    breadcrumb: "Подготовка → Установка инструментов",
-    title: "Установка инструментов",
-    badge: "Подготовка",
-    progress: 10,
-    markdownContent: installContent,
+  "install-vscode": {
+    id: "install-vscode",
+    breadcrumb: "Подготовка → VS Code",
+    title: "VS Code",
+    badge: "Редактор кода",
+    progress: 5,
+    markdownContent: installVscode,
+  },
+
+  "install-claude": {
+    id: "install-claude",
+    breadcrumb: "Подготовка → Claude Code",
+    title: "Claude Code",
+    badge: "ИИ-ассистент",
+    progress: 8,
+    markdownContent: installClaude,
+  },
+
+  "install-qwen": {
+    id: "install-qwen",
+    breadcrumb: "Подготовка → QWEN Code Companion",
+    title: "QWEN Code Companion",
+    badge: "Альтернативный ИИ",
+    progress: 11,
+    markdownContent: installQwen,
+  },
+
+  "install-github": {
+    id: "install-github",
+    breadcrumb: "Подготовка → GitHub",
+    title: "GitHub",
+    badge: "Хранилище кода",
+    progress: 14,
+    markdownContent: installGithub,
+  },
+
+  "install-vercel": {
+    id: "install-vercel",
+    breadcrumb: "Подготовка → Vercel",
+    title: "Vercel",
+    badge: "Публикация сайтов",
+    progress: 17,
+    markdownContent: installVercel,
   },
 
   "case1-landing": {
@@ -543,7 +583,11 @@ vercel --version                 # версия
 
 export const lessonOrder = [
   "home",
-  "install",
+  "install-vscode",
+  "install-claude",
+  "install-qwen",
+  "install-github",
+  "install-vercel",
   "case1-landing",
   "case2-kpi",
   "own-project",
