@@ -2,6 +2,7 @@ import { homeContent } from "./content/home";
 import { installVscode, installClaude, installQwen, installGithub, installVercel } from "./content/install";
 import { case1Content } from "./content/case1";
 import { case2Content } from "./content/case2";
+import { securityContent } from "./content/security";
 
 export type Lesson = {
   id: string;
@@ -64,6 +65,12 @@ export const navigation: NavSection[] = [
     title: "Инструменты",
     items: [
       { id: "prompt-generator", label: "Генератор промптов" },
+    ],
+  },
+  {
+    title: "Безопасность",
+    items: [
+      { id: "ib-guide", label: "Информационная безопасность" },
     ],
   },
 ];
@@ -524,6 +531,15 @@ export const lessons: Record<string, Lesson> = {
     componentId: "prompt-generator",
   },
 
+  "ib-guide": {
+    id: "ib-guide",
+    breadcrumb: "Безопасность → Информационная безопасность",
+    title: "Информационная безопасность при работе с ИИ",
+    badge: "Важно знать",
+    progress: 0,
+    markdownContent: securityContent,
+  },
+
   cheatsheet: {
     id: "cheatsheet",
     breadcrumb: "Справочник → Шпаргалка",
@@ -603,4 +619,5 @@ export const lessonOrder = [
   "case2-kpi",
   "own-project",
   "prompt-generator",
+  "ib-guide",
 ];
