@@ -48,16 +48,16 @@ export const navigation: NavSection[] = [
     ],
   },
   {
-    title: "Свободная работа",
+    title: "Проекты",
     items: [
-      { id: "own-project", label: "Свой проект" },
+      { id: "case1-landing", label: "Project 1: Медиа-монитор" },
+      { id: "case2-kpi", label: "Project 2: KPI-дашборд" },
     ],
   },
   {
-    title: "Кейсы",
+    title: "Свободная работа",
     items: [
-      { id: "case1-landing", label: "Case 1: Медиа-монитор" },
-      { id: "case2-kpi", label: "Case 2: KPI-дашборд" },
+      { id: "own-project", label: "Свой проект" },
     ],
   },
   {
@@ -461,8 +461,8 @@ export const lessons: Record<string, Lesson> = {
 
   "case1-landing": {
     id: "case1-landing",
-    breadcrumb: "Кейсы → Case 1: Медиа-монитор",
-    title: "Case 1: Медиа-монитор",
+    breadcrumb: "Проекты → Project 1: Медиа-монитор",
+    title: "Project 1: Медиа-монитор",
     badge: "QAZNA News · Самрук-Қазына",
     progress: 40,
     markdownContent: case1Content,
@@ -470,8 +470,8 @@ export const lessons: Record<string, Lesson> = {
 
   "case2-kpi": {
     id: "case2-kpi",
-    breadcrumb: "Кейсы → Case 2: KPI-дашборд",
-    title: "Case 2: KPI-дашборд",
+    breadcrumb: "Проекты → Project 2: KPI-дашборд",
+    title: "Project 2: KPI-дашборд",
     badge: "САМРУК · II квартал 2026",
     progress: 70,
     markdownContent: case2Content,
