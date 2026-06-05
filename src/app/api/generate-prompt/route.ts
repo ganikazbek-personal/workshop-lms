@@ -200,6 +200,40 @@ const SYSTEM_PROMPT = `Ты эксперт мирового уровня по Cl
 
 Принцип: лучше простой рабочий результат с первой попытки, чем сложный незаконченный.`;
 
+/** Fire-and-forget: save query to Airtable for castdev analytics */
+async function trackQuery(fields: {
+  task: string;
+  audience: string;
+  design: string;
+  extra: string;
+}) {
+  const token = process.env.AIRTABLE_API_KEY;
+  const baseId = process.env.AIRTABLE_BASE_ID;
+  const table = process.env.AIRTABLE_TABLE_NAME ?? "Запросы";
+
+  if (!token || !baseId) return; // not configured — skip silently
+
+  await fetch(
+    `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(table)}`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        fields: {
+          "Задача": fields.task,
+          "Аудитория": fields.audience || "—",
+          "Стиль дизайна": fields.design || "—",
+          "Дополнения": fields.extra || "—",
+          "Дата": new Date().toISOString(),
+        },
+      }),
+    }
+  );
+}
+
 export async function POST(req: Request) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
 
@@ -218,6 +252,9 @@ export async function POST(req: Request) {
       { status: 400, headers: { "Content-Type": "application/json" } }
     );
   }
+
+  // Track query for analytics — non-blocking, never fails the request
+  trackQuery({ task, audience: audience ?? "", design: design ?? "", extra: extra ?? "" }).catch(() => {});
 
   const userMessage = [
     `## Что нужно сделать\n${task.trim()}`,
