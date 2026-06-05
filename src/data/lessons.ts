@@ -1,5 +1,6 @@
 import { homeContent } from "./content/home";
 import { installVscode, installClaude, installQwen, installGithub, installVercel } from "./content/install";
+import { miniProjectContent } from "./content/mini-project";
 import { case1Content } from "./content/case1";
 import { case2Content } from "./content/case2";
 import { securityContent } from "./content/security";
@@ -46,6 +47,12 @@ export const navigation: NavSection[] = [
       { id: "install-qwen", label: "QWEN Code Companion" },
       { id: "install-github", label: "GitHub" },
       { id: "install-vercel", label: "Vercel" },
+    ],
+  },
+  {
+    title: "Первый мини-проект",
+    items: [
+      { id: "mini-project", label: "Мини-проект на Lovable" },
     ],
   },
   {
@@ -466,6 +473,15 @@ export const lessons: Record<string, Lesson> = {
     markdownContent: installVercel,
   },
 
+  "mini-project": {
+    id: "mini-project",
+    breadcrumb: "Первый мини-проект → Lovable",
+    title: "Первый мини-проект на Lovable",
+    badge: "10–15 минут",
+    progress: 0,
+    markdownContent: miniProjectContent,
+  },
+
   "case1-landing": {
     id: "case1-landing",
     breadcrumb: "Проекты → Project 1: Медиа-монитор",
@@ -615,6 +631,7 @@ export const lessonOrder = [
   "install-qwen",
   "install-github",
   "install-vercel",
+  "mini-project",
   "case1-landing",
   "case2-kpi",
   "own-project",
