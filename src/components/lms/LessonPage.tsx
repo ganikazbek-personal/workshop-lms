@@ -6,10 +6,12 @@ import { PromptBlock } from "./PromptBlock";
 import { Checklist } from "./Checklist";
 import { MarkdownContent } from "./MarkdownContent";
 import { PromptGenerator } from "./PromptGenerator";
+import { Glossary } from "./Glossary";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const COMPONENTS: Record<string, React.ComponentType> = {
   "prompt-generator": PromptGenerator,
+  "glossary": Glossary,
 };
 
 type Props = {

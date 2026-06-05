@@ -78,6 +78,7 @@ export const navigation: NavSection[] = [
     title: "Инструменты",
     items: [
       { id: "prompt-generator", label: "Генератор промптов" },
+      { id: "glossary", label: "Глоссарий" },
     ],
   },
 ];
@@ -547,6 +548,15 @@ export const lessons: Record<string, Lesson> = {
     componentId: "prompt-generator",
   },
 
+  glossary: {
+    id: "glossary",
+    breadcrumb: "Инструменты → Глоссарий",
+    title: "Глоссарий вайб-кодинга",
+    badge: "35 терминов",
+    progress: 0,
+    componentId: "glossary",
+  },
+
   "ib-guide": {
     id: "ib-guide",
     breadcrumb: "Безопасность → Информационная безопасность",
@@ -636,5 +646,6 @@ export const lessonOrder = [
   "case2-kpi",
   "own-project",
   "prompt-generator",
+  "glossary",
   "ib-guide",
 ];
